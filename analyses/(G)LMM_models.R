@@ -1,6 +1,6 @@
 # Purpose: to fit (G)LMM models
 
-# packeges ----
+# packages ----
 library(tidyverse)
 library(readxl)
 library(lmerTest) # for GLMs
@@ -25,7 +25,7 @@ str(Lys_data) # check the structure of the data
 # Analysis -----
 # -----------------------------------------------------------------------------#
 
-# (1) Specific root length------
+# (1) Specific root length ------
 
 Lys_data %>% 
   ggplot(aes(GW_level_cm, SRL_m_g))+
@@ -469,7 +469,7 @@ ggplot(Lys_data, aes(x = year, y = RD_mm, fill = year)) +
        )
 # -----------------------------------------------------------------------------#
 
-# (4) hyphae------
+# (4) Roots colonized with AMF ------
 
 Hyphran1 <- glm(hyphae ~  year + GW_level_cm + month + GW_level_cm:month, 
             data = Lys_data,

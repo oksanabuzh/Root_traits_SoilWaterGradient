@@ -1,24 +1,56 @@
-# 
-Purpose: fit ordination for the root traits and their predictors
+# Purpose: fit ordination for the root traits and their predictors
 
+# packages ----
+library(tidyverse)
 library(vegan)
+
 # read data 
-Lys_data <- read_excel("data/RGG_Lys_Gradient.xlsx") %>% 
-  filter(year==2023)
+Lys_data <- read_csv("data/RGG_Lys_Gradient.csv") %>% 
+  unite("Plot_ID", c("Lys_no", "date"))
 
-traits <- Lys_data %>% 
-  dplyr::select(SRL_m_g, RD_mm, RTD_g_cm3,hyphae)
+traits_2023 <- Lys_data %>% 
+  filter(year==2023) %>% 
+  dplyr::select(SRL_m_g, RD_mm, RTD_g_cm3, hyphae)
 
+traits_2024 <- Lys_data %>% 
+  filter(year==2024) %>% 
+  dplyr::select(SRL_m_g, RD_mm, RTD_g_cm3, hyphae)
 
 ## Check correlation 
-corl1 <- round(cor(traits, 
-                   use="pairwise.complete.obs", method = c("pearson")),2)
-corl1
-
 library(ggcorrplot)
-ggcorrplot(corl1, hc.order = TRUE, type = "lower",
+
+round(cor(Lys_data %>% 
+                     dplyr::select(SRL_m_g, RD_mm, RTD_g_cm3, hyphae) %>% 
+                     rename("Specific root length" = SRL_m_g,
+                            "Root diameter" = RD_mm,
+                            "Root tissue density" = RTD_g_cm3,
+                            "Roots colonized with AMF" = hyphae), 
+                   use="pairwise.complete.obs", method = c("pearson")),2) %>% 
+ggcorrplot(hc.order = F, type = "lower",
            lab = TRUE, lab_size = 4, 
            colors = c("red", "white", "blue"))
+
+# for 2023
+round(cor(traits_2023 %>% 
+                     rename("Specific root length" = SRL_m_g,
+                            "Root diameter" = RD_mm,
+                            "Root tissue density" = RTD_g_cm3,
+                            "Roots colonized with AMF" = hyphae), 
+                   use="pairwise.complete.obs", method = c("pearson")),2) %>% 
+ggcorrplot(hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 4, 
+           colors = c("red", "white", "blue"))
+
+# for 2024
+round(cor(traits_2024 %>% 
+            rename("Specific root length" = SRL_m_g,
+                   "Root diameter" = RD_mm,
+                   "Root tissue density" = RTD_g_cm3,
+                   "Roots colonized with AMF" = hyphae), 
+          use="pairwise.complete.obs", method = c("pearson")),2) %>% 
+  ggcorrplot(hc.order = F, type = "lower",
+             lab = TRUE, lab_size = 4, 
+             colors = c("red", "white", "blue"))
 
 names(Lys_data)
 
