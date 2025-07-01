@@ -23,7 +23,5 @@ data/
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-docs/
 
 .DS_Store
