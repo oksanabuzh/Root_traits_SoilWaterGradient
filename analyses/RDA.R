@@ -54,7 +54,7 @@ summary(eigenvals(ordin2024))
 RsquareAdj(ordin2023)
 RsquareAdj(ordin2024)
 
-# ---- Permutation tests ----
+# ---- Permutation tests (model fit) ----
 set.seed(1)
 perm_test <- function(model) {
   perm_stat <- permustats(anova(model))
@@ -68,9 +68,12 @@ perm_test <- function(model) {
 }
 
 perm_2023 <- perm_test(ordin2023)
-perm_2024 <- perm_test(ordin2024)
+perm_2023
 
-# ---- Goodness of fit for species (traits) ----
+perm_2024 <- perm_test(ordin2024)
+perm_2024
+
+# ---- Goodness of fit for traits ----
 goodness(ordin2023, display = "species", summarize = FALSE)
 goodness(ordin2024, display = "species", summarize = FALSE)
 
@@ -126,11 +129,11 @@ observ.scrs_2024 <- extract_observ_scrs(ordin2024, predictors_2024, centroids_20
 # ---- Plotting ordination results: 2023 and 2024 ----
 
 # ---- 2023: Plot all elements ----
-ggplot(observ.scrs_2023) +
+plot_2023_v1 <- ggplot(observ.scrs_2023) +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
   # stat_ellipse(aes(RDA1, RDA2, fill=month), alpha=.1,type='t', linewidth =1, geom="polygon") +
-  eom_segment(aes(x = RDA1, y = RDA2, xend = RDA1_centr, yend = RDA2_centr, color = month),
+  geom_segment(aes(x = RDA1, y = RDA2, xend = RDA1_centr, yend = RDA2_centr, color = month),
               alpha = .4, linewidth = 0.2, linetype = 5) +
   geom_point(data = centroids_2023, aes(x = RDA1, y = RDA2, color = month), size = 4, alpha = .5, stroke = 2) +
   geom_point(aes(RDA1, RDA2, color = month), size = 3, alpha = .5) +
@@ -142,17 +145,19 @@ ggplot(observ.scrs_2023) +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2023, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)") +
+  labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", title = "2023") +
   theme_bw() +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000"))
 
+plot_2023_v1
+  
 # ---- 2023: Plot only traits and predictors ----
-ggplot() +
+plot_2023_v2 <- ggplot() +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
   geom_point(data = centroids_2023, aes(x = RDA1, y = RDA2, color = month), size = 4, alpha = .5, stroke = 2) +
-  geom_text(data = centroids_2023, aes(RDA1, RDA2, label = month, color = month), size = 5, vjust = c(-1, -1), hjust = c(0, 1)) +
+  geom_text(data = centroids_2023, aes(RDA1, RDA2, label = month, color = month), size = 5, show.legend = F, vjust = c(-1, -1), hjust = c(0, 1)) +
   geom_text(data = trait.scrs_2023, aes(RDA1, RDA2, label = traits_names),
             color = "black", vjust = c(-1.1, 1.2, -0.6, 0.2), hjust = c(0.5, 0, 0.5, -0.1)) +
   geom_segment(data = trait.scrs_2023, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
@@ -161,15 +166,17 @@ ggplot() +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2023, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)") +
+  labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", title = "2023") +
   theme_bw() +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   ylim(-0.5, 0.9) +
   xlim(-1.2, 1.2)
 
+plot_2023_v2
+
 # ---- 2024: Plot all elements ----
-ggplot(observ.scrs_2024) +
+plot_2024_v1 <- ggplot(observ.scrs_2024) +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
   # stat_ellipse(aes(RDA1, RDA2, fill=month), alpha=.1,type='t', linewidth =1, geom="polygon") +
@@ -185,18 +192,19 @@ ggplot(observ.scrs_2024) +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2024, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)") +
+  labs(color = "month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)", title = "2024") +
   theme_bw() +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000"))+
   xlim(-1.5, 2.2)
 
+plot_2024_v1
 # ---- 2024: Plot only traits and predictors ----
-ggplot() +
+plot_2024_v2 <- ggplot() +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
   geom_point(data = centroids_2024, aes(x = RDA1, y = RDA2, color = month), size = 4, alpha = .5, stroke = 2) +
-  geom_text(data = centroids_2024, aes(RDA1, RDA2, label = month, color = month), ,show_guide = F, size = 5, vjust = c(-1, -1), hjust = c(0, 1)) +
+  geom_text(data = centroids_2024, aes(RDA1, RDA2, label = month, color = month), show_guide = F, size = 5, vjust = c(-1, -1), hjust = c(0, 1)) +
   geom_text(data = trait.scrs_2024, aes(RDA1, RDA2, label = traits_names),
             color = "black", vjust = c(-1.1, 1.2, 1.2, 1.2), hjust = c(0.7, 0.7, 0.5, 0.7)) +
   geom_segment(data = trait.scrs_2024, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
@@ -205,9 +213,33 @@ ggplot() +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2024, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)") +
+  labs(color = "month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)", title = "2024") +
   theme_bw() +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
-  scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   ylim(-1, 1) +
   xlim(-1.4, 1.6)
+
+plot_2024_v2
+
+# ---- Combine plots ----
+library(patchwork)
+
+combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 +
+  plot_layout(nrow = 1, ncol = 2, guides = "collect") +
+  plot_annotation(tag_levels = "a") &
+  theme(plot.tag = element_text(face = 'bold', size=20),
+        plot.tag.position  = c(0.1, 1.01),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 5),
+        plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
+
+print(combined_plot_v1)
+
+combined_plot_v2 <- plot_2023_v2 + plot_2024_v2 +
+  plot_layout(nrow = 1, ncol = 2, guides = "collect") +
+  plot_annotation(tag_levels = "a") &
+  theme(plot.tag = element_text(face = 'bold', size=20),
+        plot.tag.position  = c(0.1, 1.01),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 5),
+        plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
+
+print(combined_plot_v2)
