@@ -45,7 +45,7 @@ make_corr_plot <- function(df, title = NULL) {
 # ---- Create the three plots ----
 p_all <- make_corr_plot(
   Lys_data %>% select(SRL_m_g, RD_mm, RTD_g_cm3, hyphae),
-  title = "Root Traits Correlation (2023 na 2024)"
+  title = "Root Traits Correlation (2023 and 2024)"
 )
 p_2023 <- make_corr_plot(traits_2023, title = "Root Traits Correlation (2023)")
 p_2024 <- make_corr_plot(traits_2024, title = "Root Traits Correlation (2024)")
@@ -53,10 +53,14 @@ p_2024 <- make_corr_plot(traits_2024, title = "Root Traits Correlation (2024)")
 # Combine plots 
 
 combined_plot <- p_all + p_2023 + p_2024 +
-  plot_layout(design = "AA
-                        BC", guides = "collect") &
+  plot_layout(
+  design = "
+  AA
+  BC", 
+  guides = "collect") &
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size=20))
 
 print(combined_plot)
 
+ggsave("figures/correlation_plot.png", combined_plot, width = 12, height = 12, dpi = 150)
