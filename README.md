@@ -1,5 +1,5 @@
 # Root_traits_SoilWaterGradient
-ode and data for Hoysagk et al.
+## Code and data for Hoysagk et al.
 
 This repository contains the code and data for the analysis of root traits along a soil water (groundwater) gradient.
 
