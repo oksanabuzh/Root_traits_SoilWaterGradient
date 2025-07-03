@@ -1,11 +1,11 @@
-# Root_traits_SoilWaterGradient
+# Root traits along soil Water Gradient
 ## Code and data for Hoysagk et al.
 
 This repository contains the code and data for the analysis of root traits along a soil water (groundwater) gradient.
 
 ## Overview
 
-The project investigates how root morphological traits and arbuscular mycorrhizal (AMF) colonization vary across a groundwater level gradient. The repository provides a full reproducible workflow for statistical modeling, visualization, and result export.
+The project investigates how root morphological traits and arbuscular mycorrhizal (AMF) colonization vary across an experimentally manipulated groundwater level gradient in peatlends and how these effects depend on seasonality and year after the establishment of the experiment. The repository provides a full reproducible workflow for statistical modeling, visualization, and result export.
 
 ## Repository Structure
 
