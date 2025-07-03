@@ -1,0 +1,5 @@
+"Comparison","Model_1_Formula","Model_2_Formula","Test_Statistic","Df","p_value"
+"SRLran1 vs SRLran2","SRL_m_g ~ year * GW_level_cm + GW_level_cm * month","SRL_m_g ~ year + GW_level_cm + month",2.118,"-2",0.138
+"RTDran1b vs RTDran2","log(RTD_g_cm3) ~ year * GW_level_cm + GW_level_cm * month","log(RTD_g_cm3) ~ year * GW_level_cm + month",0.4,"-1",0.532
+"RDran1 vs RDran2","RD_mm ~ year * GW_level_cm + GW_level_cm * month","RD_mm ~ year + GW_level_cm + month",0.035,"-2",0.966
+"Hyphran2 vs Hyphran3","hyphae_fract ~ year * GW_level_cm + GW_level_cm * month","hyphae_fract ~ year + GW_level_cm + month",0.004,"-2",0.996

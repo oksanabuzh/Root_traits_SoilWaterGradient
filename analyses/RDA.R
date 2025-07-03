@@ -169,7 +169,6 @@ plot_2023_v2 <- ggplot() +
   labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", title = "2023") +
   theme_bw() +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
-  scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   ylim(-0.5, 0.9) +
   xlim(-1.2, 1.2)
 
