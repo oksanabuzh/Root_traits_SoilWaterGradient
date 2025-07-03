@@ -243,3 +243,49 @@ combined_plot_v2 <- plot_2023_v2 + plot_2024_v2 +
         plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
 
 print(combined_plot_v2)
+
+
+
+# ---- Extract and present permutation test results from perm_2023 and perm_2024 as publication-ready tables ----
+
+library(dplyr)
+library(knitr)
+library(tibble)
+
+# Vector of years and types 
+years <- c(2023, 2024)
+types <- c("anova", "anova_margin", "anova_axis")
+
+# Create a list of all results with labels 
+anova_list <- lapply(years, function(yr) {
+  perm_obj <- get(paste0("perm_", yr))
+  lapply(types, function(tp) {
+    as.data.frame(perm_obj[[tp]]) %>%
+      tibble::rownames_to_column("Effect") %>%
+      mutate(Test = tp, Year = yr)
+  }) %>% bind_rows()
+}) %>% bind_rows()
+
+# Save combined table
+kable(anova_list, caption = "Permutation ANOVA Results for 2023 and 2024")
+
+library(knitr)
+library(kableExtra)
+
+# Show as a nice table for presentation
+kable(anova_list, caption = "Permutation Results for 2023 and 2024") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, bold = TRUE) # Make 'Effect' column bold for clarity
+
+# To split and print by year and test type, using split/filter:
+for (yr in years) {
+  for (tp in types) {
+    tab <- dplyr::filter(anova_list, Year == yr, Test == tp)
+    kable(tab, caption = paste(yr, toupper(gsub("anova", "Permutation Test", tp))))
+  }
+}
+
+# Export all as one clean CSV for supplementary material
+write.csv(anova_list, "tables/RDA_permutation_results.csv", row.names = FALSE)
