@@ -1,4 +1,4 @@
-## Root traits along soil Water Gradient
+## Root traits in responce to rewetting of fen grasslands (groundwater gradient)
 ## Code and data for Hoysagk et al.
 
 This repository contains the code and data for the analysis of root traits along a soil water (groundwater) gradient.
