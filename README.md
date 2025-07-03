@@ -10,7 +10,7 @@ The project investigates how root morphological traits and arbuscular mycorrhiza
 ## Repository Structure
 
 - **analyses/** – R scripts for data processing, statistical analysis, and plotting.
- See the [analyses/README.md](analyses/README.md) for details:
+ See the [analyses/README.md](analyses/) for details:
     - **(G)LM_models.R:** Fitting and comparing linear and generalized linear models (LM/GLM) for root trait responses to environmental variables.
     - **RDA.R:** Redundancy Analysis (RDA) to explore multivariate relationships between root traits and environmental gradients.
     - **correlation_root_traits.R:** Computing and visualizing correlations between root traits.
