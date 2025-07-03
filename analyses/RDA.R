@@ -234,6 +234,11 @@ combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 +
 
 print(combined_plot_v1)
 
+
+ggsave("figures/RDA_plot_v1.png", combined_plot_v1, width = 13, height = 6, dpi = 150)
+
+
+
 combined_plot_v2 <- plot_2023_v2 + plot_2024_v2 +
   plot_layout(nrow = 1, ncol = 2, guides = "collect") +
   plot_annotation(tag_levels = "a") &
@@ -244,6 +249,7 @@ combined_plot_v2 <- plot_2023_v2 + plot_2024_v2 +
 
 print(combined_plot_v2)
 
+ggsave("figures/RDA_plot_v2.png", combined_plot_v2, width = 13, height = 6, dpi = 150)
 
 
 # ---- Extract and present permutation test results from perm_2023 and perm_2024 as publication-ready tables ----
@@ -264,7 +270,15 @@ anova_list <- lapply(years, function(yr) {
       tibble::rownames_to_column("Effect") %>%
       mutate(Test = tp, Year = yr)
   }) %>% bind_rows()
-}) %>% bind_rows()
+}) %>% bind_rows() %>% 
+  mutate(Variance=round(Variance, 2),
+         F=round(F, 2)) %>% 
+  mutate(Type=case_when(Test=="anova" ~ "model fit",
+                        Test=="anova_margin" ~ "effects of predictors",
+                        Test=="anova_axis" ~ "fit for RDA axes")) %>% 
+ mutate(Effect=case_when(Effect=="GW_level_cm" ~ "Groundwater level",
+                        Effect=="month" ~ "Months",
+                        .default = Effect))
 
 # Save combined table
 kable(anova_list, caption = "Permutation ANOVA Results for 2023 and 2024")
