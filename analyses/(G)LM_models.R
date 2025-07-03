@@ -1,4 +1,4 @@
-# Purpose: Fit (G)LMM models to root trait data and visualize results
+# Purpose: Fit (G)LM models to root trait data and visualize results
 
 # ----------------- Load Packages -----------------
 library(tidyverse)    # Data manipulation and plotting
@@ -6,7 +6,7 @@ library(performance)  # Model checks (collinearity, overdispersion)
 library(ggsignif)     # Significance annotations on ggplots
 library(sjPlot)       # Model visualization
 library(ggeffects)    # For ggpredict() predictions
-library(car)          # For model fitresults
+library(car)          # For model fit results
 
 # ----------------- Data Preparation -----------------
 # Read in the root traits data and convert year to factor
@@ -514,7 +514,7 @@ final_model_formulas <- tibble::tibble(
   Model_Type = vapply(final_models_list, get_family_chr, character(1)),
   R2 = vapply(final_models_list, get_r2_theoretical, character(1))
 )
-write.csv(final_model_formulas, "tables/final_model_information.csv", row.names = FALSE)
+write.csv(final_model_formulas, "tables/(G)LM_final_model_information.csv", row.names = FALSE)
 
 # --- 2. Likelihood Ratio Test Results ---
 get_lrt_table <- function(mod1, mod2, name1, name2, test_type = "F") {
@@ -543,7 +543,7 @@ lrt_Hyph <- {
   )
 }
 lrt_table <- dplyr::bind_rows(lrt_SRL, lrt_RTD, lrt_RD, lrt_Hyph)
-write.csv(lrt_table, "tables/likelihood_ratio_tests.csv", row.names = FALSE)
+write.csv(lrt_table, "tables/(G)LM_likelihood_ratio_tests.csv", row.names = FALSE)
 
 # --- 3. car::Anova Results for Each Final Model ---
 get_anova_table <- function(model, model_name) {
@@ -570,5 +570,5 @@ anova_RTD <- get_anova_table(RTDran2, "RTDran2")
 anova_RD <- get_anova_table(RDran2, "RDran2")
 anova_Hyph <- get_anova_table(Hyphran3, "Hyphran3")
 anova_all <- dplyr::bind_rows(anova_SRL, anova_RTD, anova_RD, anova_Hyph)
-write.csv(anova_all, "tables/Anova_final_models.csv", row.names = FALSE)
+write.csv(anova_all, "tables/(G)LM_Anova_final_models.csv", row.names = FALSE)
 
