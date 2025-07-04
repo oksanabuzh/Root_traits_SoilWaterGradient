@@ -1,6 +1,9 @@
 # data folder
 data/
 
+# first code drafts (not optimised)
+code_drafts/
+
 # History files
 .Rhistory
 .Rapp.history
