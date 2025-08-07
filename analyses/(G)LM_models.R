@@ -11,6 +11,7 @@ library(car)          # For model fit results
 # ----------------- Data Preparation -----------------
 # Read in the root traits data and convert year to factor
 Lys_data <- read_csv("data/RGG_Lys_Gradient.csv") %>%
+  filter(!year==2025) %>% 
   mutate(year = factor(year),
          hyphae_fract = no_counts / no_intersects)
 str(Lys_data) # Check structure
@@ -160,7 +161,9 @@ Plot_RTD_1 <- ggplot(RTDran2_pred, aes(x = x, y = predicted, color = month, fill
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = RTD_g_cm3, color = month), size = 2) +
   facet_wrap(~year) +
-  labs(x = "Groundwater Level [cm]", y = "Root Tissue Density", color = "Month", fill = "Month") +
+  labs(x = "Groundwater Level [cm]", 
+       y = expression("Root Tissue Density [g/cm"^3*"]"), 
+       color = "Month", fill = "Month") +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   theme_bw()
@@ -175,7 +178,7 @@ Plot_RTD_2 <- ggplot(RTDran2_pred2, aes(x = x, y = predicted, color = year, fill
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = RTD_g_cm3, color = year, pch = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "Root Tissue Density") +
+  labs(x = "Groundwater Level [cm]", y = expression("Root Tissue Density [g/cm"^3*"]")) +
   theme_bw()
 
 Plot_RTD_2
@@ -191,7 +194,7 @@ Plot_RTD_3 <- ggplot(Lys_data, aes(x = month, y = RTD_g_cm3, fill = month)) +
               annotations = c(RTD_month_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
-  labs(x = "Seasonality", y = "Root Tissue Density") +
+  labs(x = "Seasonality", y = expression("Root Tissue Density [g/cm"^3*"]")) +
   theme_minimal() + ylim(0.1, 0.32)
 
 Plot_RTD_3
@@ -207,7 +210,7 @@ Plot_RTD_4 <- ggplot(Lys_data, aes(x = year, y = RTD_g_cm3, fill = year)) +
               y_position = max(Lys_data$RTD_g_cm3, na.rm = TRUE) * 1.05,
               annotations = c(RTD_year_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  labs(x = "Year", y = "Root Tissue Density") +
+  labs(x = "Year", y = expression("Root Tissue Density [g/cm"^3*"]")) +
   theme_minimal() + ylim(0.1, 0.32)
 Plot_RTD_4
 
@@ -339,7 +342,7 @@ Plot_Hyph_1 <- ggplot(Hyphran3_pred, aes(x = x, y = predicted, color = month, fi
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = hyphae, color = month), size = 2) +
   facet_wrap(~year) +
-  labs(x = "Groundwater Level [cm]", y = "Roots colonized with AMF", color = "Month", fill = "Month") +
+  labs(x = "Groundwater Level [cm]", y = "AMF colonization in roots [%]", color = "Month", fill = "Month") +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   theme_bw()+
@@ -357,7 +360,7 @@ Plot_Hyph_2 <- ggplot(Hyphran3_pred2, aes(x = x, y = predicted, color = year, fi
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = hyphae, color = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "Roots colonized with AMF", color = "Year", fill = "Year") +
+  labs(x = "Groundwater Level [cm]", y = "AMF colonization in roots [%]", color = "Year", fill = "Year") +
   theme_bw()+
   scale_y_continuous(labels = scales::label_percent())
 
@@ -377,7 +380,7 @@ Plot_Hyph_3 <- ggplot(Lys_data, aes(x = month, y = hyphae, fill = month)) +
               annotations = c(AMF_month_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
-  labs(x = "Seasonality", y = "Roots colonized with AMF") +
+  labs(x = "Seasonality", y = "AMF colonization in roots [%]") +
   theme_minimal()+
   scale_y_continuous(labels = scales::label_percent())
 
@@ -394,7 +397,7 @@ Plot_Hyph_4 <- ggplot(Lys_data, aes(x = year, y = hyphae, fill = year)) +
               y_position = max(Lys_data$hyphae, na.rm = TRUE) * 1.01,
               annotations = c(AMF_year_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  labs(x = "Year", y = "Roots colonized with AMF") +
+  labs(x = "Year", y = "AMF colonization in roots [%]") +
   theme_minimal() + 
   scale_y_continuous(labels = scales::label_percent(), limits = c(0, 1))
 
@@ -411,7 +414,7 @@ combined_plot_1 <- (Plot_SRL_1 + Plot_RTD_1) /
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size=18),
         plot.tag.position  = c(0.11, 1.05),
-        plot.margin = margin(t = 20, r = 5, b = 5, l = 5),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 30),
         plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
 
 print(combined_plot_1)
@@ -425,7 +428,7 @@ combined_plot_3 <- (Plot_SRL_3 + Plot_RTD_3) /
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size=20),
         plot.tag.position  = c(0.2, 1.07),
-        plot.margin = margin(t = 20, r = 5, b = 5, l = 5),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 20),
         plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
 
 print(combined_plot_3)
@@ -440,13 +443,12 @@ combined_plot_4 <- (Plot_SRL_4 + Plot_RTD_4) /
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size=20),
         plot.tag.position  = c(0.2, 1.07),
-        plot.margin = margin(t = 20, r = 5, b = 5, l = 5),
+        plot.margin = margin(t = 20, r = 5, b = 5, l = 30),
         plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
 
 print(combined_plot_4)
 
 ggsave("figures/year_effcet.png", combined_plot_4, width = 7, height = 9, dpi = 150)
-
 
 
 # --- Extract model tables  ----
@@ -572,3 +574,186 @@ anova_Hyph <- get_anova_table(Hyphran3, "Hyphran3")
 anova_all <- dplyr::bind_rows(anova_SRL, anova_RTD, anova_RD, anova_Hyph)
 write.csv(anova_all, "tables/(G)LM_Anova_final_models.csv", row.names = FALSE)
 
+
+# ----------------- (5) Annual aboveground productivity (bmy_g) -----------------
+
+# Fit initial and log-transformed models, check diagnostics
+Lys_annual <- filter(Lys_data, month == "June")
+
+BMran1 <- lm(bmy_g ~ year * GW_level_cm, data = Lys_annual)
+par(mfrow = c(2,2)); plot(BMran1); par(mfrow = c(1,1))
+
+BMran1b <- lm(bmy_g ~ year * GW_level_cm, data = Lys_annual)
+par(mfrow = c(2,2)); plot(BMran1b); par(mfrow = c(1,1))
+
+# check collinearity 
+check_collinearity(BMran1)
+car::Anova(BMran1)
+
+# Remove non-significant interaction
+BMran2 <- lm(bmy_g ~ year + GW_level_cm, data = Lys_annual)
+
+# model fit
+car::Anova(BMran2)
+
+# check collinearity 
+check_collinearity(BMran2)
+
+# Likelihood-ratio test
+anova(BMran1, BMran2)
+
+
+BMran2 <- lm(bmy_g ~ year + GW_level_cm, data = Lys_annual)
+BMran2b <- lm(bmy_g ~ year + poly(GW_level_cm, 2), data = Lys_annual)
+BMran2c <- lm(bmy_g ~ year * poly(GW_level_cm, 2), data = Lys_annual)
+
+
+anova(BMran2, BMran2b)
+anova(BMran2b, BMran2c)
+
+# final model
+car::Anova(BMran2b)
+
+## Plots----
+
+### Plot 2 (groundwater level)----
+
+BMran2_pred2 <- ggpredict(BMran2b, terms = c("GW_level_cm [all]", "year")) %>%
+  as.data.frame() %>% rename(year = group)
+
+Plot_BM_2 <- ggplot(BMran2_pred2, aes(x = x, y = predicted, color = year, fill = year)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
+  geom_line(size = 0.8) +
+  geom_point(data = Lys_annual, aes(x = GW_level_cm, y = bmy_g, color = year, pch = year), size = 2) +
+  labs(x = "Groundwater Level [cm]", y = "Annual aboveground productivity [g]") +
+  scale_color_manual(values = c("#D8152F", "#2857FF")) +
+  scale_fill_manual(values = c("#D8152F", "#2857FF")) +
+  theme_bw()
+
+Plot_BM_2
+
+ggsave("figures/annualproductivity_year.png", Plot_BM_2, width = 10, height = 7.5, dpi = 150)
+
+
+# --- Extract model tables  ----
+
+library(MuMIn)
+library(tibble)
+library(dplyr)
+library(car)
+
+# --- Helper: Get model formula as character string ---
+pretty_formula <- function(model) {
+  f <- deparse(formula(model))
+  f <- gsub("\\s+", " ", f)
+  f <- gsub(" +", " ", f)
+  f
+}
+
+get_family_chr <- function(model) {
+  if ("family" %in% names(model)) {
+    fam <- model$family$family
+    link <- model$family$link
+    paste0("GLM (", fam, ", link = ", link, ")")
+  } else if ("lm" %in% class(model)) {
+    "Linear Model (LM)"
+  } else {
+    class(model)[1]
+  }
+}
+
+# --- Helper:  R2 (MuMIn) ---
+get_r2_theoretical <- function(model) {
+  # For LM and GLM, MuMIn::r.squaredGLMM works and gives R2m and R2c
+  # We'll use only the marginal R2 (R2m) as we have no random effcets
+  r2 <- tryCatch(MuMIn::r.squaredGLMM(model), error = function(e) NULL)
+  if (!is.null(r2)) {
+    # Handles both LM and GLMM/GLM
+    r2m <- as.numeric(r2[1])
+    return(sprintf("%.3f", r2m))
+  }
+  # fallback for plain LM
+  if (inherits(model, "lm")) {
+    r2 <- summary(model)$r.squared
+    return(sprintf("%.3f", r2))
+  }
+  return(NA)
+}
+
+# --- 1. Final Model Formulas Table ---
+final_models_list <- list(
+  SRLran2 = SRLran2,
+  RTDran2 = RTDran2,
+  RDran2 = RDran2,
+  Hyphran3 = Hyphran3
+)
+
+final_model_formulas <- tibble::tibble(
+  Trait = c(
+    "Specific Root Length (SRL)",
+    "Root Tissue Density (RTD)",
+    "Root Diameter (RD)",
+    "AMF Colonization (AMF)"
+  ),
+  Model_Object = names(final_models_list),
+  Model_Formula = vapply(final_models_list, pretty_formula, character(1)),
+  Model_Type = vapply(final_models_list, get_family_chr, character(1)),
+  R2 = vapply(final_models_list, get_r2_theoretical, character(1))
+)
+write.csv(final_model_formulas, "tables/(G)LM_final_model_information.csv", row.names = FALSE)
+
+# --- 2. Likelihood Ratio Test Results ---
+get_lrt_table <- function(mod1, mod2, name1, name2, test_type = "F") {
+  aov_tab <- anova(mod1, mod2, test = test_type)
+  tibble::tibble(
+    Comparison = paste(name1, "vs", name2),
+    Model_1_Formula = pretty_formula(mod1),
+    Model_2_Formula = pretty_formula(mod2),
+    Test_Statistic = round(aov_tab[2, "F"], 3),
+    Df = paste(aov_tab[2, "Df"], collapse = "/"),
+    p_value = signif(aov_tab[2, "Pr(>F)"], 3)
+  )
+}
+lrt_SRL <- get_lrt_table(SRLran1, SRLran2, "SRLran1", "SRLran2")
+lrt_RTD <- get_lrt_table(RTDran1b, RTDran2, "RTDran1b", "RTDran2")
+lrt_RD <- get_lrt_table(RDran1, RDran2, "RDran1", "RDran2")
+lrt_Hyph <- {
+  aov_tab <- anova(Hyphran2, Hyphran3, test = "F")
+  tibble::tibble(
+    Comparison = "Hyphran2 vs Hyphran3",
+    Model_1_Formula = pretty_formula(Hyphran2),
+    Model_2_Formula = pretty_formula(Hyphran3),
+    Test_Statistic = round(aov_tab[2, "F"], 3),
+    Df = paste(aov_tab[2, "Df"], collapse = "/"),
+    p_value = signif(aov_tab[2, "Pr(>F)"], 3)
+  )
+}
+lrt_table <- dplyr::bind_rows(lrt_SRL, lrt_RTD, lrt_RD, lrt_Hyph)
+write.csv(lrt_table, "tables/(G)LM_likelihood_ratio_tests.csv", row.names = FALSE)
+
+# --- 3. car::Anova Results for Each Final Model ---
+get_anova_table <- function(model, model_name) {
+  a <- car::Anova(model)
+  predictors <- rownames(a)
+  results <- tibble::tibble(
+    Model = model_name,
+    Model_Formula = pretty_formula(model),
+    Predictor = predictors,
+    Statistic = round(a[, 1], 3),
+    Df = a[, "Df"],
+    p_value = signif(a[, ncol(a)], 3),
+    Significance = case_when(
+      a[, ncol(a)] < 0.001 ~ "***",
+      a[, ncol(a)] < 0.01 ~ "**",
+      a[, ncol(a)] < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  )
+  results
+}
+anova_SRL <- get_anova_table(SRLran2, "SRLran2")
+anova_RTD <- get_anova_table(RTDran2, "RTDran2")
+anova_RD <- get_anova_table(RDran2, "RDran2")
+anova_Hyph <- get_anova_table(Hyphran3, "Hyphran3")
+anova_all <- dplyr::bind_rows(anova_SRL, anova_RTD, anova_RD, anova_Hyph)
+write.csv(anova_all, "tables/(G)LM_Anova_final_models.csv", row.names = FALSE)
