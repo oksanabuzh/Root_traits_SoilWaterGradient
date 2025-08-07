@@ -5,10 +5,14 @@ library(tidyverse)
 library(vegan)
 library(ggrepel)
 library(tibble)
+library(lattice)
+
 
 # ---- Read and Prepare Data ----
-Lys_data <- read_csv("data/RGG_Lys_Gradient.csv") %>%
+Lys_data <- read_csv("data/RGG_Lys_Gradient2.csv") %>%
   unite("Plot_ID", c("Lys_no", "date"), remove = TRUE)
+
+names(Lys_data)
 
 # ---- Utility function to extract and subset data by year ----
 get_traits_by_year <- function(data, yr) {
@@ -31,12 +35,22 @@ prep_traits <- function(data, yr) {
 
 predictors_2023 <- prep_predictors(Lys_data, 2023)
 predictors_2024 <- prep_predictors(Lys_data, 2024)
+predictors_2025 <- Lys_data %>%
+  filter(year == 2025) %>%
+  select(Plot_ID, GW_level_cm)
+
 traits_2023 <- prep_traits(Lys_data, 2023)
 traits_2024 <- prep_traits(Lys_data, 2024)
+traits_2025 <- Lys_data %>%
+  filter(year == 2025) %>%
+  select(Plot_ID, SRL_m_g, RD_mm, RTD_g_cm3, leafN_mgg, rootN_mgg) %>%
+  column_to_rownames("Plot_ID")
 
 # ---- Check DCA axis length (to justify linear RDA) ----
 decorana(traits_2023)
 decorana(traits_2024)
+decorana(traits_2025)
+
 
 # ---- Run Redundancy Analysis for both years ----
 ordin_rda <- function(traits, predictors) {
@@ -45,14 +59,20 @@ ordin_rda <- function(traits, predictors) {
 
 ordin2023 <- ordin_rda(traits_2023, predictors_2023)
 ordin2024 <- ordin_rda(traits_2024, predictors_2024)
+ordin2025 <- rda(traits_2025 ~ GW_level_cm , data = predictors_2025, scale = TRUE)
 
 # ---- Model evaluation ----
 vif.cca(ordin2023)
 vif.cca(ordin2024)
+vif.cca(ordin2025)
+
 summary(eigenvals(ordin2023))
 summary(eigenvals(ordin2024))
+summary(eigenvals(ordin2025))
+
 RsquareAdj(ordin2023)
 RsquareAdj(ordin2024)
+RsquareAdj(ordin2025)
 
 # ---- Permutation tests (model fit) ----
 set.seed(1)
@@ -73,13 +93,18 @@ perm_2023
 perm_2024 <- perm_test(ordin2024)
 perm_2024
 
+perm_2025 <- perm_test(ordin2025)
+perm_2025
+
 # ---- Goodness of fit for traits ----
 goodness(ordin2023, display = "species", summarize = FALSE)
 goodness(ordin2024, display = "species", summarize = FALSE)
+goodness(ordin2025, display = "species", summarize = FALSE)
 
 # ---- Plot ordination for both years ----
 plot(ordin2023, scaling = "species")
 plot(ordin2024, scaling = "species")
+plot(ordin2025, scaling = "species")
 
 # ---- Extract RDA scores for plotting ----
 extract_env_scrs <- function(ordin) {
@@ -102,7 +127,9 @@ extract_trait_scrs <- function(ordin) {
       traits=="SRL_m_g" ~ "Specific root length",
       traits=="RD_mm" ~ "Root diameter",
       traits=="RTD_g_cm3" ~ "Root tissue density",
-      traits=="hyphae" ~"Roots AMF"
+      traits=="hyphae" ~"Roots AMF",
+      traits=="leafN_mgg" ~"Leaf N",
+      traits=="rootN_mgg" ~"Root N"
     ))
 }
 
@@ -125,6 +152,13 @@ centroids_2024 <- extract_centroids(ordin2024)
 trait.scrs_2024 <- extract_trait_scrs(ordin2024)
 observ.scrs_2024 <- extract_observ_scrs(ordin2024, predictors_2024, centroids_2024)
 
+# --- For 2025 ---
+env.scrs_2025 <- extract_env_scrs(ordin2025)
+trait.scrs_2025 <- extract_trait_scrs(ordin2025)
+observ.scrs_2025 <- scores(ordin2025, display = "sites", scaling = "species") %>%
+  as_tibble(rownames="Plot_ID") %>%
+  left_join(predictors_2025, by="Plot_ID")
+
 
 # ---- Plotting ordination results: 2023 and 2024 ----
 
@@ -132,7 +166,7 @@ observ.scrs_2024 <- extract_observ_scrs(ordin2024, predictors_2024, centroids_20
 plot_2023_v1 <- ggplot(observ.scrs_2023) +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
-  # stat_ellipse(aes(RDA1, RDA2, fill=month), alpha=.1,type='t', linewidth =1, geom="polygon") +
+  stat_ellipse(aes(RDA1, RDA2, fill=month), alpha=.1,type='t', linewidth =1, geom="polygon") +
   geom_segment(aes(x = RDA1, y = RDA2, xend = RDA1_centr, yend = RDA2_centr, color = month),
               alpha = .4, linewidth = 0.2, linetype = 5) +
   geom_point(data = centroids_2023, aes(x = RDA1, y = RDA2, color = month), size = 4, alpha = .5, stroke = 2) +
@@ -178,7 +212,7 @@ plot_2023_v2
 plot_2024_v1 <- ggplot(observ.scrs_2024) +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
-  # stat_ellipse(aes(RDA1, RDA2, fill=month), alpha=.1,type='t', linewidth =1, geom="polygon") +
+  stat_ellipse(aes(RDA1, RDA2, fill=month), alpha=.1,type='t', linewidth =1, geom="polygon") +
   geom_segment(aes(x = RDA1, y = RDA2, xend = RDA1_centr, yend = RDA2_centr, color = month),
                alpha = .4, linewidth = 0.2, linetype = 5) +
   geom_point(data = centroids_2024, aes(x = RDA1, y = RDA2, color = month), size = 4, alpha = .5, stroke = 2) +
@@ -198,6 +232,7 @@ plot_2024_v1 <- ggplot(observ.scrs_2024) +
   xlim(-1.5, 2.2)
 
 plot_2024_v1
+
 # ---- 2024: Plot only traits and predictors ----
 plot_2024_v2 <- ggplot() +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
@@ -220,11 +255,36 @@ plot_2024_v2 <- ggplot() +
 
 plot_2024_v2
 
+
+
+# ---- 2025: Plot all elements ----
+plot_2025_v1 <- ggplot(observ.scrs_2025) +
+  geom_hline(yintercept = 0, color = "grey", lty = 1) +
+  geom_vline(xintercept = 0, color = "grey", lty = 1) +
+  geom_point(aes(RDA1, PC1), size = 3, alpha = .2) +
+  geom_text(data = trait.scrs_2025, aes(RDA1, PC1, label = traits_names),
+            color = "black", vjust = c(1, 1.2,  -0.8, 0.2,  1.5), 
+                             hjust = c(1, 0,     0,   -0.1,  1.2))+
+  
+  geom_text(data = env.scrs_2025, aes(RDA1, PC1, label = predictors_names),
+            color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
+  geom_segment(data = env.scrs_2025, aes(x = 0, y = 0, xend = RDA1, yend = PC1),
+               arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
+  geom_segment(data = trait.scrs_2025, aes(x = 0, y = 0, xend = RDA1, yend = PC1),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black", linewidth = 0.9) +
+  labs(x = "RDA1 (27.5 %)", y = "PCA1 (44.7 %)", title = "2025") +
+  theme_bw() +
+  xlim(-1.9, 2.1) + ylim(-2.3, 1.3)
+
+plot_2025_v1
+
+as.factor(trait.scrs_2025$traits_names)
+
 # ---- Combine plots ----
 library(patchwork)
 
-combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 +
-  plot_layout(nrow = 1, ncol = 2, guides = "collect") +
+combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 + plot_2025_v1 +  guide_area() + 
+  plot_layout(nrow = 2, ncol = 2, guides = "collect") +
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size=20),
         plot.tag.position  = c(0.1, 1.01),
@@ -238,19 +298,6 @@ ggsave("figures/RDA_plot_v1.png", combined_plot_v1, width = 13, height = 6, dpi 
 
 
 
-combined_plot_v2 <- plot_2023_v2 + plot_2024_v2 +
-  plot_layout(nrow = 1, ncol = 2, guides = "collect") +
-  plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(face = 'bold', size=20),
-        plot.tag.position  = c(0.1, 1.01),
-        plot.margin = margin(t = 20, r = 5, b = 5, l = 5),
-        plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
-
-print(combined_plot_v2)
-
-ggsave("figures/RDA_plot_v2.png", combined_plot_v2, width = 13, height = 6, dpi = 150)
-
-
 # ---- Extract and present permutation test results from perm_2023 and perm_2024 as publication-ready tables ----
 
 library(dplyr)
@@ -258,7 +305,7 @@ library(knitr)
 library(tibble)
 
 # Vector of years and types 
-years <- c(2023, 2024)
+years <- c(2023, 2024, 2025)
 types <- c("anova", "anova_margin", "anova_axis")
 
 # Create a list of all results with labels 
@@ -280,13 +327,14 @@ anova_list <- lapply(years, function(yr) {
                         .default = Effect))
 
 # Save combined table
-kable(anova_list, caption = "Permutation ANOVA Results for 2023 and 2024")
 
 library(knitr)
 library(kableExtra)
+kable(anova_list, caption = "Permutation ANOVA Results for 2023-2025")
+
 
 # Show as a nice table for presentation
-kable(anova_list, caption = "Permutation Results for 2023 and 2024") %>%
+kable(anova_list, caption = "Permutation Results for 2023-2025") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 full_width = FALSE,
                 position = "center") %>%
