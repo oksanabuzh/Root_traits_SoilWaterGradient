@@ -451,188 +451,61 @@ print(combined_plot_4)
 ggsave("figures/year_effcet.png", combined_plot_4, width = 7, height = 9, dpi = 150)
 
 
-# --- Extract model tables  ----
-
-library(MuMIn)
-library(tibble)
-library(dplyr)
-library(car)
-
-# --- Helper: Get model formula as character string ---
-pretty_formula <- function(model) {
-  f <- deparse(formula(model))
-  f <- gsub("\\s+", " ", f)
-  f <- gsub(" +", " ", f)
-  f
-}
-
-get_family_chr <- function(model) {
-  if ("family" %in% names(model)) {
-    fam <- model$family$family
-    link <- model$family$link
-    paste0("GLM (", fam, ", link = ", link, ")")
-  } else if ("lm" %in% class(model)) {
-    "Linear Model (LM)"
-  } else {
-    class(model)[1]
-  }
-}
-
-# --- Helper:  R2 (MuMIn) ---
-get_r2_theoretical <- function(model) {
-  # For LM and GLM, MuMIn::r.squaredGLMM works and gives R2m and R2c
-  # We'll use only the marginal R2 (R2m) as we have no random effcets
-  r2 <- tryCatch(MuMIn::r.squaredGLMM(model), error = function(e) NULL)
-  if (!is.null(r2)) {
-    # Handles both LM and GLMM/GLM
-    r2m <- as.numeric(r2[1])
-    return(sprintf("%.3f", r2m))
-  }
-  # fallback for plain LM
-  if (inherits(model, "lm")) {
-    r2 <- summary(model)$r.squared
-    return(sprintf("%.3f", r2))
-  }
-  return(NA)
-}
-
-# --- 1. Final Model Formulas Table ---
-final_models_list <- list(
-  SRLran2 = SRLran2,
-  RTDran2 = RTDran2,
-  RDran2 = RDran2,
-  Hyphran3 = Hyphran3
-)
-
-final_model_formulas <- tibble::tibble(
-  Trait = c(
-    "Specific Root Length (SRL)",
-    "Root Tissue Density (RTD)",
-    "Root Diameter (RD)",
-    "AMF Colonization (AMF)"
-  ),
-  Model_Object = names(final_models_list),
-  Model_Formula = vapply(final_models_list, pretty_formula, character(1)),
-  Model_Type = vapply(final_models_list, get_family_chr, character(1)),
-  R2 = vapply(final_models_list, get_r2_theoretical, character(1))
-)
-write.csv(final_model_formulas, "tables/(G)LM_final_model_information.csv", row.names = FALSE)
-
-# --- 2. Likelihood Ratio Test Results ---
-get_lrt_table <- function(mod1, mod2, name1, name2, test_type = "F") {
-  aov_tab <- anova(mod1, mod2, test = test_type)
-  tibble::tibble(
-    Comparison = paste(name1, "vs", name2),
-    Model_1_Formula = pretty_formula(mod1),
-    Model_2_Formula = pretty_formula(mod2),
-    Test_Statistic = round(aov_tab[2, "F"], 3),
-    Df = paste(aov_tab[2, "Df"], collapse = "/"),
-    p_value = signif(aov_tab[2, "Pr(>F)"], 3)
-  )
-}
-lrt_SRL <- get_lrt_table(SRLran1, SRLran2, "SRLran1", "SRLran2")
-lrt_RTD <- get_lrt_table(RTDran1b, RTDran2, "RTDran1b", "RTDran2")
-lrt_RD <- get_lrt_table(RDran1, RDran2, "RDran1", "RDran2")
-lrt_Hyph <- {
-  aov_tab <- anova(Hyphran2, Hyphran3, test = "F")
-  tibble::tibble(
-    Comparison = "Hyphran2 vs Hyphran3",
-    Model_1_Formula = pretty_formula(Hyphran2),
-    Model_2_Formula = pretty_formula(Hyphran3),
-    Test_Statistic = round(aov_tab[2, "F"], 3),
-    Df = paste(aov_tab[2, "Df"], collapse = "/"),
-    p_value = signif(aov_tab[2, "Pr(>F)"], 3)
-  )
-}
-lrt_table <- dplyr::bind_rows(lrt_SRL, lrt_RTD, lrt_RD, lrt_Hyph)
-write.csv(lrt_table, "tables/(G)LM_likelihood_ratio_tests.csv", row.names = FALSE)
-
-# --- 3. car::Anova Results for Each Final Model ---
-get_anova_table <- function(model, model_name) {
-  a <- car::Anova(model)
-  predictors <- rownames(a)
-  results <- tibble::tibble(
-    Model = model_name,
-    Model_Formula = pretty_formula(model),
-    Predictor = predictors,
-    Statistic = round(a[, 1], 3),
-    Df = a[, "Df"],
-    p_value = signif(a[, ncol(a)], 3),
-    Significance = case_when(
-      a[, ncol(a)] < 0.001 ~ "***",
-      a[, ncol(a)] < 0.01 ~ "**",
-      a[, ncol(a)] < 0.05 ~ "*",
-      TRUE ~ ""
-    )
-  )
-  results
-}
-anova_SRL <- get_anova_table(SRLran2, "SRLran2")
-anova_RTD <- get_anova_table(RTDran2, "RTDran2")
-anova_RD <- get_anova_table(RDran2, "RDran2")
-anova_Hyph <- get_anova_table(Hyphran3, "Hyphran3")
-anova_all <- dplyr::bind_rows(anova_SRL, anova_RTD, anova_RD, anova_Hyph)
-write.csv(anova_all, "tables/(G)LM_Anova_final_models.csv", row.names = FALSE)
-
-
 # ----------------- (5) Annual aboveground productivity (bmy_g) -----------------
-
-# Fit initial and log-transformed models, check diagnostics
-Lys_annual <- filter(Lys_data, month == "June")
-
-BMran1 <- lm(bmy_g ~ year * GW_level_cm, data = Lys_annual)
-par(mfrow = c(2,2)); plot(BMran1); par(mfrow = c(1,1))
-
-BMran1b <- lm(bmy_g ~ year * GW_level_cm, data = Lys_annual)
-par(mfrow = c(2,2)); plot(BMran1b); par(mfrow = c(1,1))
+Lys_data_mass <- Lys_data %>% 
+  drop_na(bmy_g)
+# Fit linear model with interactions
+BMran1 <- lm(bmy_g ~ year * GW_level_cm, data = Lys_data_mass)
+par(mfrow = c(2,2)); plot(BMran1); par(mfrow = c(1,1)) # not best, but the dataset is small
 
 # check collinearity 
 check_collinearity(BMran1)
 car::Anova(BMran1)
 
 # Remove non-significant interaction
-BMran2 <- lm(bmy_g ~ year + GW_level_cm, data = Lys_annual)
-
-# model fit
-car::Anova(BMran2)
-
-# check collinearity 
-check_collinearity(BMran2)
+BMran2 <- lm(bmy_g ~ year + GW_level_cm, data = Lys_data_mass)
 
 # Likelihood-ratio test
 anova(BMran1, BMran2)
+# chose simpler model:
+BMran2
 
+# fit model with unimodal response to W_level_cm:
+BMran3 <- lm(bmy_g ~ year + poly(GW_level_cm, 2), data = Lys_data_mass)
+# Likelihood-ratio test
+anova(BMran2, BMran3)
+# chose more complex model:
+BMran3
 
-BMran2 <- lm(bmy_g ~ year + GW_level_cm, data = Lys_annual)
-BMran2b <- lm(bmy_g ~ year + poly(GW_level_cm, 2), data = Lys_annual)
-BMran2c <- lm(bmy_g ~ year * poly(GW_level_cm, 2), data = Lys_annual)
+# fit model with interections:
+BMran4 <- lm(bmy_g ~ year * poly(GW_level_cm, 2), data = Lys_data_mass)
 
-
-anova(BMran2, BMran2b)
-anova(BMran2b, BMran2c)
+# Likelihood-ratio test
+anova(BMran3, BMran4)
+# chose more complex model
 
 # final model
-car::Anova(BMran2b)
+car::Anova(BMran4)
 
 ## Plots----
 
 ### Plot 2 (groundwater level)----
 
-BMran2_pred2 <- ggpredict(BMran2b, terms = c("GW_level_cm [all]", "year")) %>%
+BMran2_pred2 <- ggpredict(BMran4, terms = c("GW_level_cm [-20:0]", "year")) %>%
   as.data.frame() %>% rename(year = group)
 
 Plot_BM_2 <- ggplot(BMran2_pred2, aes(x = x, y = predicted, color = year, fill = year)) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
-  geom_point(data = Lys_annual, aes(x = GW_level_cm, y = bmy_g, color = year, pch = year), size = 2) +
+  geom_point(data = Lys_data_mass, aes(x = GW_level_cm, y = bmy_g, color = year, pch = year), size = 2) +
   labs(x = "Groundwater Level [cm]", y = "Annual aboveground productivity [g]") +
   scale_color_manual(values = c("#D8152F", "#2857FF")) +
   scale_fill_manual(values = c("#D8152F", "#2857FF")) +
   theme_bw()
-
 Plot_BM_2
 
 ggsave("figures/annualproductivity_year.png", Plot_BM_2, width = 10, height = 7.5, dpi = 150)
+
 
 
 # --- Extract model tables  ----
@@ -685,7 +558,8 @@ final_models_list <- list(
   SRLran2 = SRLran2,
   RTDran2 = RTDran2,
   RDran2 = RDran2,
-  Hyphran3 = Hyphran3
+  Hyphran3 = Hyphran3,
+  BMran4 = BMran4
 )
 
 final_model_formulas <- tibble::tibble(
@@ -693,7 +567,8 @@ final_model_formulas <- tibble::tibble(
     "Specific Root Length (SRL)",
     "Root Tissue Density (RTD)",
     "Root Diameter (RD)",
-    "AMF Colonization (AMF)"
+    "AMF Colonization (AMF)",
+    "Annual AG Biomass"
   ),
   Model_Object = names(final_models_list),
   Model_Formula = vapply(final_models_list, pretty_formula, character(1)),
@@ -728,7 +603,13 @@ lrt_Hyph <- {
     p_value = signif(aov_tab[2, "Pr(>F)"], 3)
   )
 }
-lrt_table <- dplyr::bind_rows(lrt_SRL, lrt_RTD, lrt_RD, lrt_Hyph)
+
+lrt_mass_m1m2 <- get_lrt_table(BMran1, BMran2, "BMran1", "BMran2")
+lrt_mass_m2m3 <- get_lrt_table(BMran2, BMran3, "BMran2", "BMran3")
+lrt_mass_m3m4 <- get_lrt_table(BMran3, BMran4, "BMran3", "BMran4")
+
+lrt_table <- dplyr::bind_rows(lrt_SRL, lrt_RTD, lrt_RD, lrt_Hyph,
+                              lrt_mass_m1m2, lrt_mass_m2m3, lrt_mass_m3m4)
 write.csv(lrt_table, "tables/(G)LM_likelihood_ratio_tests.csv", row.names = FALSE)
 
 # --- 3. car::Anova Results for Each Final Model ---
@@ -755,5 +636,9 @@ anova_SRL <- get_anova_table(SRLran2, "SRLran2")
 anova_RTD <- get_anova_table(RTDran2, "RTDran2")
 anova_RD <- get_anova_table(RDran2, "RDran2")
 anova_Hyph <- get_anova_table(Hyphran3, "Hyphran3")
-anova_all <- dplyr::bind_rows(anova_SRL, anova_RTD, anova_RD, anova_Hyph)
+anova_biomass <- get_anova_table(BMran4, "BMran4")
+
+
+anova_all <- dplyr::bind_rows(anova_SRL, anova_RTD, anova_RD, anova_Hyph, anova_biomass)
 write.csv(anova_all, "tables/(G)LM_Anova_final_models.csv", row.names = FALSE)
+

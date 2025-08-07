@@ -3,3 +3,4 @@
 "Root Tissue Density (RTD)","RTDran2","log(RTD_g_cm3) ~ year * GW_level_cm + month","Linear Model (LM)","0.831"
 "Root Diameter (RD)","RDran2","RD_mm ~ year + GW_level_cm + month","Linear Model (LM)","0.440"
 "AMF Colonization (AMF)","Hyphran3","hyphae_fract ~ year + GW_level_cm + month","GLM (quasibinomial, link = logit)","0.192"
+"Annual AG Biomass","BMran4","bmy_g ~ year * poly(GW_level_cm, 2)","Linear Model (LM)","0.758"

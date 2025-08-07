@@ -3,3 +3,6 @@
 "RTDran1b vs RTDran2","log(RTD_g_cm3) ~ year * GW_level_cm + GW_level_cm * month","log(RTD_g_cm3) ~ year * GW_level_cm + month",0.4,"-1",0.532
 "RDran1 vs RDran2","RD_mm ~ year * GW_level_cm + GW_level_cm * month","RD_mm ~ year + GW_level_cm + month",0.035,"-2",0.966
 "Hyphran2 vs Hyphran3","hyphae_fract ~ year * GW_level_cm + GW_level_cm * month","hyphae_fract ~ year + GW_level_cm + month",0.004,"-2",0.996
+"BMran1 vs BMran2","bmy_g ~ year * GW_level_cm","bmy_g ~ year + GW_level_cm",1.532,"-1",0.236
+"BMran2 vs BMran3","bmy_g ~ year + GW_level_cm","bmy_g ~ year + poly(GW_level_cm, 2)",9.587,"1",0.00789
+"BMran3 vs BMran4","bmy_g ~ year + poly(GW_level_cm, 2)","bmy_g ~ year * poly(GW_level_cm, 2)",4.454,"2",0.0358

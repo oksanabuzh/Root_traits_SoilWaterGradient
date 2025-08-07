@@ -15,3 +15,7 @@
 "Hyphran3","hyphae_fract ~ year + GW_level_cm + month","year",7.577,1,0.00591,"**"
 "Hyphran3","hyphae_fract ~ year + GW_level_cm + month","GW_level_cm",14.965,1,0.000109,"***"
 "Hyphran3","hyphae_fract ~ year + GW_level_cm + month","month",3.117,1,0.0775,""
+"BMran4","bmy_g ~ year * poly(GW_level_cm, 2)","year",617716.125,1,0.000676,"***"
+"BMran4","bmy_g ~ year * poly(GW_level_cm, 2)","poly(GW_level_cm, 2)",707821.314,2,0.00146,"**"
+"BMran4","bmy_g ~ year * poly(GW_level_cm, 2)","year:poly(GW_level_cm, 2)",266744.915,2,0.0358,"*"
+"BMran4","bmy_g ~ year * poly(GW_level_cm, 2)","Residuals",359368.049,12,NA,""
