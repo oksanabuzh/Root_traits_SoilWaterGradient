@@ -261,7 +261,7 @@ plot_2024_v2
 plot_2025_v1 <- ggplot(observ.scrs_2025) +
   geom_hline(yintercept = 0, color = "grey", lty = 1) +
   geom_vline(xintercept = 0, color = "grey", lty = 1) +
-  geom_point(aes(RDA1, PC1), size = 3, alpha = .2) +
+  geom_point(aes(RDA1, PC1), size = 3, alpha = 0.5, color="#3CB22D") +
   geom_text(data = trait.scrs_2025, aes(RDA1, PC1, label = traits_names),
             color = "black", vjust = c(1, 1.2,  -0.8, 0.2,  1.5), 
                              hjust = c(1, 0,     0,   -0.1,  1.2))+
@@ -294,7 +294,7 @@ combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 + plot_2025_v1 +  guide_area() +
 print(combined_plot_v1)
 
 
-ggsave("figures/RDA_plot_v1.png", combined_plot_v1, width = 13, height = 6, dpi = 150)
+ggsave("figures/RDA_plot_v1.png", combined_plot_v1, width = 13, height = 12, dpi = 150)
 
 
 
