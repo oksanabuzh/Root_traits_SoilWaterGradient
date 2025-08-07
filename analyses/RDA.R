@@ -9,7 +9,7 @@ library(lattice)
 
 
 # ---- Read and Prepare Data ----
-Lys_data <- read_csv("data/RGG_Lys_Gradient2.csv") %>%
+Lys_data <- read_csv("data/RGG_Lys_Gradient.csv") %>%
   unite("Plot_ID", c("Lys_no", "date"), remove = TRUE)
 
 names(Lys_data)
