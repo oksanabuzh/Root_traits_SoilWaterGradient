@@ -266,7 +266,7 @@ Plot_RD_3 <- ggplot(Lys_data, aes(x = month, y = RD_mm, fill = month)) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   labs(x = "Seasonality", y = "Average Root Diameter [mm]",
        fill="Months") +
-  theme_bw() 
+  theme_bw() + ylim(0.13, 0.22)
 
 Plot_RD_3
 
@@ -356,7 +356,7 @@ Plot_Hyph_3 <- ggplot(Lys_data, aes(x = month, y = hyphae, fill = month)) +
   labs(x = "Seasonality", y = "Percentage of Roots colonized with AMF [%]",
        fill="Months") +
   theme_bw() +
-  scale_y_continuous(labels = scales::label_percent())
+  scale_y_continuous(labels = scales::label_percent(),  limits = c(0, 0.97))
 
 Plot_Hyph_3
 
@@ -383,7 +383,7 @@ Plot_Hyph_4
 # ---- Combine plots ----
 library(patchwork)
 
-combined_plot_1 <- (Plot_SRL_1 + Plot_RTD_1) / 
+combined_plot_1 <- (Plot_RTD_1 + Plot_SRL_1) / 
   plot_spacer() / 
   (Plot_RD_1 + Plot_Hyph_1) +
   plot_layout(heights = c(10, 0.5, 10), guides = "collect") +
@@ -397,7 +397,7 @@ print(combined_plot_1)
 
 ggsave("figures/interaction_effects.png", combined_plot_1, width = 10, height = 7.5, dpi = 150)
 
-combined_plot_3 <- (Plot_SRL_3 + Plot_RTD_3) / 
+combined_plot_3 <- (Plot_SRL_3  + Plot_RTD_3) / 
   plot_spacer() / 
   (Plot_RD_3 + Plot_Hyph_3) +
   plot_layout(heights = c(10, 1, 10), guides = "collect") +
@@ -409,7 +409,7 @@ combined_plot_3 <- (Plot_SRL_3 + Plot_RTD_3) /
 
 print(combined_plot_3)
 
-ggsave("figures/month_effcet.png", combined_plot_3, width = 7, height = 9, dpi = 150)
+ggsave("figures/month_effcet.png", combined_plot_3, width = 8, height = 9, dpi = 150)
 
 
 combined_plot_4 <- (Plot_SRL_4 + Plot_RTD_4) / 
