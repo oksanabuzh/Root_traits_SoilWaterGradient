@@ -1,23 +1,17 @@
-"Effect","Df","Variance","F","Pr(>F)","Test","Year","Type"
-"Model",2,1.51,4.53,0.015,"anova",2023,"model fit"
-"Residual",15,2.49,NA,NA,"anova",2023,"model fit"
-"Groundwater level",1,0.61,3.65,0.042,"anova_margin",2023,"effects of predictors"
-"Months",1,0.9,5.4,0.011,"anova_margin",2023,"effects of predictors"
-"Residual",15,2.49,NA,NA,"anova_margin",2023,"effects of predictors"
-"RDA1",1,1.31,7.88,0.014,"anova_axis",2023,"fit for RDA axes"
-"RDA2",1,0.2,1.17,0.309,"anova_axis",2023,"fit for RDA axes"
-"Residual",15,2.49,NA,NA,"anova_axis",2023,"fit for RDA axes"
-"Model",2,1.8,6.16,0.001,"anova",2024,"model fit"
-"Residual",15,2.2,NA,NA,"anova",2024,"model fit"
-"Groundwater level",1,0.66,4.5,0.007,"anova_margin",2024,"effects of predictors"
-"Months",1,1.14,7.82,0.001,"anova_margin",2024,"effects of predictors"
-"Residual",15,2.2,NA,NA,"anova_margin",2024,"effects of predictors"
-"RDA1",1,1.28,8.76,0.001,"anova_axis",2024,"fit for RDA axes"
-"RDA2",1,0.52,3.56,0.022,"anova_axis",2024,"fit for RDA axes"
-"Residual",15,2.2,NA,NA,"anova_axis",2024,"fit for RDA axes"
-"Model",1,1.38,2.66,0.009,"anova",2025,"model fit"
-"Residual",7,3.62,NA,NA,"anova",2025,"model fit"
-"Groundwater level",1,1.38,2.66,0.007,"anova_margin",2025,"effects of predictors"
-"Residual",7,3.62,NA,NA,"anova_margin",2025,"effects of predictors"
-"RDA1",1,1.38,2.66,0.012,"anova_axis",2025,"fit for RDA axes"
-"Residual",7,3.62,NA,NA,"anova_axis",2025,"fit for RDA axes"
+Effect,Df,Variance,F,Pr(>F),Test,Year,Type
+Model,2,1.51,4.53,0.015,anova,2023,model fit
+Residual,15,2.49,NA,NA,anova,2023,model fit
+Groundwater level,1,0.61,3.65,0.042,anova_margin,2023,effects of predictors
+Months,1,0.9,5.4,0.011,anova_margin,2023,effects of predictors
+Residual,15,2.49,NA,NA,anova_margin,2023,effects of predictors
+RDA1,1,1.31,7.88,0.014,anova_axis,2023,fit for RDA axes
+RDA2,1,0.2,1.17,0.309,anova_axis,2023,fit for RDA axes
+Residual,15,2.49,NA,NA,anova_axis,2023,fit for RDA axes
+Model,2,1.8,6.16,0.001,anova,2024,model fit
+Residual,15,2.2,NA,NA,anova,2024,model fit
+Groundwater level,1,0.66,4.5,0.007,anova_margin,2024,effects of predictors
+Months,1,1.14,7.82,0.001,anova_margin,2024,effects of predictors
+Residual,15,2.2,NA,NA,anova_margin,2024,effects of predictors
+RDA1,1,1.28,8.76,0.001,anova_axis,2024,fit for RDA axes
+RDA2,1,0.52,3.56,0.022,anova_axis,2024,fit for RDA axes
+Residual,15,2.2,NA,NA,anova_axis,2024,fit for RDA axes
