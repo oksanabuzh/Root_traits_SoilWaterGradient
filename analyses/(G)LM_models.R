@@ -174,21 +174,8 @@ Plot_RTD_1 <- ggplot(RTDran2_pred, aes(x = x, y = predicted, color = month, fill
   theme_bw()
 Plot_RTD_1
 
-### Plot 2 (groundwater level)----
 
-RTDran2_pred2 <- ggpredict(RTDran2, terms = c("GW_level_cm [all]", "year")) %>%
-  as.data.frame() %>% rename(year = group)
-
-Plot_RTD_2 <- ggplot(RTDran2_pred2, aes(x = x, y = predicted, color = year, fill = year)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
-  geom_line(size = 0.8) +
-  geom_point(data = Lys_data, aes(x = GW_level_cm, y = RTD_g_cm3, color = year, pch = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = expression("Root Tissue Density [g/cm"^3*"]")) +
-  theme_bw()
-
-Plot_RTD_2
-
-### Plot 3 (year, violin plot) ----
+### Plot 2 (months, violin plot) ----
 RTD_month_stats <- get_pval_and_sign(car::Anova(RTDran2), "month")
 RTD_month_annot <- paste0("<0.001", RTD_month_stats$sign)
 
@@ -199,12 +186,13 @@ Plot_RTD_3 <- ggplot(Lys_data, aes(x = month, y = RTD_g_cm3, fill = month)) +
               annotations = c(RTD_month_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
-  labs(x = "Seasonality", y = expression("Root Tissue Density [g/cm"^3*"]")) +
-  theme_minimal() + ylim(0.1, 0.32)
+  labs(x = "Seasonality", y = expression("Root Tissue Density [g/cm"^3*"]"),
+       fill="Months") +
+  theme_bw() + ylim(0.1, 0.32)
 
 Plot_RTD_3
 
-### Plot 4 (year, violin plot)----
+### Plot 3 (year, violin plot)----
 
 RTD_year_stats <- get_pval_and_sign(car::Anova(RTDran2), "year")
 RTD_year_annot <- paste0(">0.001", RTD_year_stats$sign)
@@ -215,8 +203,11 @@ Plot_RTD_4 <- ggplot(Lys_data, aes(x = year, y = RTD_g_cm3, fill = year)) +
               y_position = max(Lys_data$RTD_g_cm3, na.rm = TRUE) * 1.05,
               annotations = c(RTD_year_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  labs(x = "Year", y = expression("Root Tissue Density [g/cm"^3*"]")) +
-  theme_minimal() + ylim(0.1, 0.32)
+  labs(x = "Year", y = expression("Root Tissue Density [g/cm"^3*"]"),
+       fill="Year") +
+  theme_bw() +
+  scale_fill_manual(values = new_col)  + ylim(0.1, 0.32)
+
 Plot_RTD_4
 
 
@@ -260,21 +251,8 @@ Plot_RD_1 <- ggplot(RDran2_pred, aes(x = x, y = predicted, color = month, fill =
 
 Plot_RD_1
 
-### Plot 2 (groundwater level)----
 
-RDran2_pred2 <- ggpredict(RDran2, terms = c("GW_level_cm [all]", "year")) %>%
-  as.data.frame() %>% rename(year = group)
-
-Plot_RD_2 <- ggplot(RDran2_pred2, aes(x = x, y = predicted, fill = year, color = year)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
-  geom_line(size = 0.8) +
-  geom_point(data = Lys_data, aes(x = GW_level_cm, y = RD_mm, color = year, pch = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "Average Root Diameter [mm]") +
-  theme_bw()
-
-Plot_RD_2
-
-### Plot 3 (month, violin plot) ----
+### Plot 2 (month, violin plot) ----
 
 RD_month_stats <- get_pval_and_sign(car::Anova(RDran2), "month")
 RD_month_annot <- paste0(round(signif(RD_month_stats$p.value, 3), 3), RD_month_stats$sign)
@@ -286,12 +264,13 @@ Plot_RD_3 <- ggplot(Lys_data, aes(x = month, y = RD_mm, fill = month)) +
               annotations = c(RD_month_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
-  labs(x = "Seasonality", y = "Average Root Diameter [mm]") +
-  theme_minimal()
+  labs(x = "Seasonality", y = "Average Root Diameter [mm]",
+       fill="Months") +
+  theme_bw() 
 
 Plot_RD_3
 
-### Plot 4 (year, violin plot)----
+### Plot 3 (year, violin plot)----
 
 RD_year_stats <- get_pval_and_sign(car::Anova(RDran2), "year")
 RD_year_annot <- paste0("<0.001", RD_year_stats$sign)
@@ -302,8 +281,10 @@ Plot_RD_4 <- ggplot(Lys_data, aes(x = year, y = RD_mm, fill = year)) +
               y_position = max(Lys_data$RD_mm, na.rm = TRUE) * 1.01,
               annotations = c(RD_year_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  labs(x = "Year", y = "Average Root Diameter [mm]") +
-  theme_minimal() + ylim(0.13, 0.22)
+  labs(x = "Year", y = "Average Root Diameter [mm]",
+       fill="Year") +
+  theme_bw() +
+  scale_fill_manual(values = new_col) + ylim(0.13, 0.22)
 
 Plot_RD_4
 
@@ -347,7 +328,8 @@ Plot_Hyph_1 <- ggplot(Hyphran3_pred, aes(x = x, y = predicted, color = month, fi
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = hyphae, color = month), size = 2) +
   facet_wrap(~year) +
-  labs(x = "Groundwater Level [cm]", y = "AMF colonization in roots [%]", color = "Month", fill = "Month") +
+  labs(x = "Groundwater Level [cm]", y = "Percentage of Roots colonized with AMF [%]", 
+       color = "Month", fill = "Month") +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   theme_bw()+
@@ -356,23 +338,9 @@ Plot_Hyph_1 <- ggplot(Hyphran3_pred, aes(x = x, y = predicted, color = month, fi
 
 Plot_Hyph_1
 
-### Plot 2 (groundwater level)----
-
-Hyphran3_pred2 <- ggpredict(Hyphran3, terms = c("GW_level_cm [all]", "year")) %>%
-  as.data.frame() %>% rename(year = group)
-
-Plot_Hyph_2 <- ggplot(Hyphran3_pred2, aes(x = x, y = predicted, color = year, fill = year)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
-  geom_line(size = 0.8) +
-  geom_point(data = Lys_data, aes(x = GW_level_cm, y = hyphae, color = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "AMF colonization in roots [%]", color = "Year", fill = "Year") +
-  theme_bw()+
-  scale_y_continuous(labels = scales::label_percent())
 
 
-Plot_Hyph_2
-
-### Plot 3 (month, violin plot) ----
+### Plot 2 (month, violin plot) ----
 
 AMF_month_stats <- get_pval_and_sign(car::Anova(Hyphran3), "month")
 
@@ -385,13 +353,14 @@ Plot_Hyph_3 <- ggplot(Lys_data, aes(x = month, y = hyphae, fill = month)) +
               annotations = c(AMF_month_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
-  labs(x = "Seasonality", y = "AMF colonization in roots [%]") +
-  theme_minimal()+
+  labs(x = "Seasonality", y = "Percentage of Roots colonized with AMF [%]",
+       fill="Months") +
+  theme_bw() +
   scale_y_continuous(labels = scales::label_percent())
 
 Plot_Hyph_3
 
-### Plot 4 (year, violin plot)----
+### Plot 3 (year, violin plot)----
 
 AMF_year_stats <- get_pval_and_sign(car::Anova(Hyphran3), "year")
 AMF_year_annot <- paste0(round(signif(AMF_year_stats$p.value, 3), 3), AMF_year_stats$sign)
@@ -402,8 +371,10 @@ Plot_Hyph_4 <- ggplot(Lys_data, aes(x = year, y = hyphae, fill = year)) +
               y_position = max(Lys_data$hyphae, na.rm = TRUE) * 1.01,
               annotations = c(AMF_year_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  labs(x = "Year", y = "AMF colonization in roots [%]") +
-  theme_minimal() + 
+  labs(x = "Year", y = "Percentage of Roots colonized with AMF [%]",
+       fill="Year") +
+  theme_bw() +
+  scale_fill_manual(values = new_col) +
   scale_y_continuous(labels = scales::label_percent(), limits = c(0, 1))
 
 Plot_Hyph_4
