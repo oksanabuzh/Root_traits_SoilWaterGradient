@@ -41,7 +41,7 @@ get_pval_and_sign <- function(anova_tab, pred) {
 new_labels <- c("2023" = "first year",
                 "2024" = "second year")
 
-# ----------------- color assignment -----------------
+# ----------------- Color assignment -----------------
 
 new_col <- c("#E03C53", "#4C72FE")
 
