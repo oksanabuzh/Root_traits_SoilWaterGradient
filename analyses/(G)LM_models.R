@@ -36,7 +36,16 @@ get_pval_and_sign <- function(anova_tab, pred) {
     dplyr::select(predictor, p.value, sign)
 }
 
-# ----------------- (1) Specific Root Length (SRL) -----------------
+#------------------ Label assignment for year ----------------
+
+new_labels <- c("2023" = "first year",
+                "2024" = "second year")
+
+# ----------------- color assignment -----------------
+
+new_col <- c("#E55C6E", "#698AFE")
+
+# ----------------- (1) Specific Root Length (SRL) ---------------
 
 # Fit linear model with interactions
 SRLran1 <- lm(SRL_m_g ~ year * GW_level_cm + GW_level_cm * month, data = Lys_data)
@@ -64,31 +73,22 @@ SRLran2_pred <- ggpredict(SRLran2, terms = c("GW_level_cm [all]", "year", "month
   as.data.frame() %>% rename(month = facet, year = group)
 
 # Plot predicted SRL for each year/month, overlaying raw data
-Plot_SRL_1 <- ggplot(SRLran2_pred, aes(x = x, y = predicted, color = month, fill = month)) +
+Plot_SRL_1 <- ggplot(SRLran2_pred, 
+                     aes(x = x, y = predicted, color = month, fill = month)) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
-  geom_line(size = 0.8) +
+  geom_line(linewidth = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = SRL_m_g, color = month), size = 2) +
-  facet_wrap(~year) +
-  labs(x = "Groundwater Level [cm]", y = "Specific root length [m/g]", color = "Month", fill = "Month") +
+  facet_wrap(~year, labeller = as_labeller(new_labels)) +
+  labs(x = "Groundwater Level [cm]", y = "Specific Root Length [m/g]",
+       color = "Month", fill = "Month") +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
   theme_bw()
 Plot_SRL_1
 
-### Plot 2 (groundwater level)----
-SRLran2_pred2 <- ggpredict(SRLran2, terms = c("GW_level_cm [all]", "month")) %>%
-  as.data.frame() %>% rename(month = group)
 
-Plot_SRL_2 <- ggplot(SRLran2_pred2, aes(x = x, y = predicted, color = month, fill = month)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
-  geom_line(size = 0.8) +
-  geom_point(data = Lys_data, aes(x = GW_level_cm, y = SRL_m_g, color = month, pch = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "Specific root length [m/g]") +
-  scale_color_manual(values = c("#3CB22D", "#FF8000")) +
-  theme_bw()
-Plot_SRL_2
 
-### Plot 3 (month, violin plot) ----
+### Plot 2 (month, violin plot) ----
 
 SRL_month_stats <- get_pval_and_sign(car::Anova(SRLran2), "month")
 SRL_month_annot <- paste0(round(signif(SRL_month_stats$p.value, 3), 3), SRL_month_stats$sign)
@@ -100,12 +100,14 @@ Plot_SRL_3 <- ggplot(Lys_data, aes(x = month, y = SRL_m_g, fill = month)) +
               annotations = c(SRL_month_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
-  labs(x = "Seasonality", y = "Specific root length [m/g]") +
-  theme_minimal() +
+  labs(x = "Seasonality", y = "Specific Root Length [m/g]",
+       fill="Months") +
+  theme_bw() +
   ylim(155, 440)
+
 Plot_SRL_3
 
-### Plot 4 (year, violin plot)----
+### Plot 3 (year, violin plot)----
 
 SRL_year_stats <- get_pval_and_sign(car::Anova(SRLran2), "year")
 SRL_year_annot <- paste0(round(signif(SRL_year_stats$p.value, 3), 2), SRL_year_stats$sign)
@@ -116,9 +118,12 @@ Plot_SRL_4 <- ggplot(Lys_data, aes(x = year, y = SRL_m_g, fill = year)) +
               y_position = max(Lys_data$SRL_m_g, na.rm = TRUE) * 1.01,
               annotations = c(SRL_year_annot)) +
   stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  labs(x = "Year", y = "Specific root length [m/g]") +
-  theme_minimal() +
+  labs(x = "Sampling Year", y = "Specific Root Length [m/g]",
+       fill="Year") +
+  theme_bw() +
+  scale_fill_manual(values = new_col) +
   ylim(155, 440)
+
 Plot_SRL_4
 
 # ----------------- (2) Root Tissue Density (RTD) -----------------
@@ -160,7 +165,7 @@ Plot_RTD_1 <- ggplot(RTDran2_pred, aes(x = x, y = predicted, color = month, fill
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = RTD_g_cm3, color = month), size = 2) +
-  facet_wrap(~year) +
+  facet_wrap(~year, labeller = as_labeller(new_labels)) +
   labs(x = "Groundwater Level [cm]", 
        y = expression("Root Tissue Density [g/cm"^3*"]"), 
        color = "Month", fill = "Month") +
