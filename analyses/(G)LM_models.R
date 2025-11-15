@@ -43,7 +43,7 @@ new_labels <- c("2023" = "first year",
 
 # ----------------- color assignment -----------------
 
-new_col <- c("#E55C6E", "#698AFE")
+new_col <- c("#E03C53", "#4C72FE")
 
 # ----------------- (1) Specific Root Length (SRL) ---------------
 
@@ -113,7 +113,7 @@ SRL_year_stats <- get_pval_and_sign(car::Anova(SRLran2), "year")
 SRL_year_annot <- paste0(round(signif(SRL_year_stats$p.value, 3), 2), SRL_year_stats$sign)
 
 Plot_SRL_4 <- ggplot(Lys_data, aes(x = year, y = SRL_m_g, fill = year)) +
-  geom_violin(alpha = 0.7) +
+  geom_violin(alpha = 0.75) +
   geom_signif(comparisons = list(c("2023", "2024")),
               y_position = max(Lys_data$SRL_m_g, na.rm = TRUE) * 1.01,
               annotations = c(SRL_year_annot)) +
@@ -121,7 +121,8 @@ Plot_SRL_4 <- ggplot(Lys_data, aes(x = year, y = SRL_m_g, fill = year)) +
   labs(x = "Sampling Year", y = "Specific Root Length [m/g]",
        fill="Year") +
   theme_bw() +
-  scale_fill_manual(values = new_col) +
+  scale_fill_manual(values = new_col,
+                    labels=new_labels) +
   ylim(155, 440)
 
 Plot_SRL_4
@@ -198,7 +199,7 @@ RTD_year_stats <- get_pval_and_sign(car::Anova(RTDran2), "year")
 RTD_year_annot <- paste0(">0.001", RTD_year_stats$sign)
 
 Plot_RTD_4 <- ggplot(Lys_data, aes(x = year, y = RTD_g_cm3, fill = year)) +
-  geom_violin(alpha = 0.7) +
+  geom_violin(alpha = 0.75) +
   geom_signif(comparisons = list(c("2023", "2024")),
               y_position = max(Lys_data$RTD_g_cm3, na.rm = TRUE) * 1.05,
               annotations = c(RTD_year_annot)) +
@@ -206,7 +207,8 @@ Plot_RTD_4 <- ggplot(Lys_data, aes(x = year, y = RTD_g_cm3, fill = year)) +
   labs(x = "Year", y = expression("Root Tissue Density [g/cm"^3*"]"),
        fill="Year") +
   theme_bw() +
-  scale_fill_manual(values = new_col)  + ylim(0.1, 0.32)
+  scale_fill_manual(values = new_col,
+                    labels=new_labels)  + ylim(0.1, 0.32)
 
 Plot_RTD_4
 
@@ -276,7 +278,7 @@ RD_year_stats <- get_pval_and_sign(car::Anova(RDran2), "year")
 RD_year_annot <- paste0("<0.001", RD_year_stats$sign)
 
 Plot_RD_4 <- ggplot(Lys_data, aes(x = year, y = RD_mm, fill = year)) +
-  geom_violin(alpha = 0.7) +
+  geom_violin(alpha = 0.75) +
   geom_signif(comparisons = list(c("2023", "2024")),
               y_position = max(Lys_data$RD_mm, na.rm = TRUE) * 1.01,
               annotations = c(RD_year_annot)) +
@@ -284,7 +286,8 @@ Plot_RD_4 <- ggplot(Lys_data, aes(x = year, y = RD_mm, fill = year)) +
   labs(x = "Year", y = "Average Root Diameter [mm]",
        fill="Year") +
   theme_bw() +
-  scale_fill_manual(values = new_col) + ylim(0.13, 0.22)
+  scale_fill_manual(values = new_col,
+                    labels=new_labels) + ylim(0.13, 0.22)
 
 Plot_RD_4
 
@@ -366,7 +369,7 @@ AMF_year_stats <- get_pval_and_sign(car::Anova(Hyphran3), "year")
 AMF_year_annot <- paste0(round(signif(AMF_year_stats$p.value, 3), 3), AMF_year_stats$sign)
 
 Plot_Hyph_4 <- ggplot(Lys_data, aes(x = year, y = hyphae, fill = year)) +
-  geom_violin(alpha = 0.7) +
+  geom_violin(alpha = 0.75) +
   geom_signif(comparisons = list(c("2023", "2024")),
               y_position = max(Lys_data$hyphae, na.rm = TRUE) * 1.01,
               annotations = c(AMF_year_annot)) +
@@ -374,7 +377,8 @@ Plot_Hyph_4 <- ggplot(Lys_data, aes(x = year, y = hyphae, fill = year)) +
   labs(x = "Year", y = "Percentage of Roots colonized with AMF [%]",
        fill="Year") +
   theme_bw() +
-  scale_fill_manual(values = new_col) +
+  scale_fill_manual(values = new_col,
+                    labels=new_labels) +
   scale_y_continuous(labels = scales::label_percent(), limits = c(0, 1))
 
 Plot_Hyph_4
@@ -424,7 +428,7 @@ combined_plot_4 <- (Plot_SRL_4 + Plot_RTD_4) /
 
 print(combined_plot_4)
 
-ggsave("figures/year_effcet.png", combined_plot_4, width = 7, height = 9, dpi = 150)
+ggsave("figures/year_effcet.png", combined_plot_4, width = 8, height = 9, dpi = 150)
 
 
 # ----------------- (5) Annual aboveground productivity (bmy_g) -----------------
@@ -465,7 +469,7 @@ car::Anova(BMran4)
 
 ## Plots----
 
-### Plot 2 (groundwater level)----
+### Plot 1 (groundwater level)----
 
 BMran2_pred2 <- ggpredict(BMran4, terms = c("GW_level_cm [-20:0]", "year")) %>%
   as.data.frame() %>% rename(year = group)
@@ -474,7 +478,8 @@ Plot_BM_2 <- ggplot(BMran2_pred2, aes(x = x, y = predicted, color = year, fill =
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data_mass, aes(x = GW_level_cm, y = bmy_g, color = year, pch = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "Annual Aboveground Productivity [g]") +
+  labs(x = "Groundwater Level [cm]", y = "Annual Aboveground Productivity [g]",
+       fill="Year", color="Year", shape="Year") +
   scale_color_manual(values = c("#D8152F", "#2857FF"),
                      labels=new_labels) +
   scale_fill_manual(values = c("#D8152F", "#2857FF"),
