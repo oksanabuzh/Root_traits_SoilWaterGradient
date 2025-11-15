@@ -19,6 +19,10 @@ get_traits_by_year <- function(data, yr) {
     select(SRL_m_g, RD_mm, RTD_g_cm3, hyphae)
 }
 
+traits_all <- Lys_data%>%
+  filter(!year == 2025) %>%
+  select(SRL_m_g, RD_mm, RTD_g_cm3, hyphae)
+
 traits_2023 <- get_traits_by_year(Lys_data, 2023)
 traits_2024 <- get_traits_by_year(Lys_data, 2024)
 traits_2025 <- Lys_data %>% filter(year == 2025) %>%
@@ -66,21 +70,20 @@ make_corr_plot2025 <- function(df, title = NULL) {
 }
 
 # ---- Create plots ----
-p_2023 <- make_corr_plot(traits_2023, title = "2023")
-p_2024 <- make_corr_plot(traits_2024, title = "2024")
-p_2025 <- make_corr_plot2025(traits_2025, title = "2025")
+p_all <- make_corr_plot(traits_2023, title = "Overall Root Trait Correlation")
+p_2023 <- make_corr_plot(traits_2023, title = "First Sampling Year")
+p_2024 <- make_corr_plot(traits_2024, title = "Second Sampling Year")
+# p_2025 <- make_corr_plot2025(traits_2025, title = "2025")
 
 # Combine plots 
 
-combined_plot <- p_2023 + p_2024 + p_2025 +
-  plot_layout(
-  design = "
-  AA
-  BC", 
-  guides = "collect") &
+combined_plot <- 
+  p_all + p_2023 + p_2024  +
+  plot_layout(nrow = 1, ncol = 3, guides = "collect") +
   plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(face = 'bold', size=20),
-        plot.title = element_text(hjust = 0.5, face = 'bold', size=15))
+  theme(plot.tag = element_text(face = 'bold', size=15),
+        plot.tag.position  = c(0.3, 1.07),
+        plot.title = element_text(hjust = 0.5, face = 'bold', size=11))
 
 print(combined_plot)
 

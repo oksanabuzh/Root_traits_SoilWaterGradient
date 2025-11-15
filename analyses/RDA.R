@@ -179,8 +179,10 @@ plot_2023_v1 <- ggplot(observ.scrs_2023) +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2023, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", title = "2023") +
-  theme_bw() +
+  labs(color = "Month", fill = "Month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", 
+       title = "First year") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold")) +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000"))
 
@@ -200,8 +202,10 @@ plot_2023_v2 <- ggplot() +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2023, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", title = "2023") +
-  theme_bw() +
+  labs(color = "Month", fill = "Month", x = "RDA1 (32.7 %)", y = "RDA2 (4.8 %)", 
+       title = "First year") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold")) +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   ylim(-0.5, 0.9) +
   xlim(-1.2, 1.2)
@@ -225,8 +229,10 @@ plot_2024_v1 <- ggplot(observ.scrs_2024) +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2024, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)", title = "2024") +
-  theme_bw() +
+  labs(color = "Month", fill = "Month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)", 
+       title = "Second year") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold")) +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000"))+
   xlim(-1.5, 2.2)
@@ -247,8 +253,10 @@ plot_2024_v2 <- ggplot() +
             color = "blue", size = 5, vjust = -0.5, hjust = 0.7) +
   geom_segment(data = env.scrs_2024, aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
                arrow = arrow(length = unit(0.3, "cm")), color = "blue", linewidth = 1) +
-  labs(color = "month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)", title = "2024") +
-  theme_bw() +
+  labs(color = "Month", fill = "Month", x = "RDA1 (32.1 %)", y = "RDA2 (13 %)", 
+       title = "Second year") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold")) +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   ylim(-1, 1) +
   xlim(-1.4, 1.6)
@@ -283,8 +291,8 @@ as.factor(trait.scrs_2025$traits_names)
 # ---- Combine plots ----
 library(patchwork)
 
-combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 + plot_2025_v1 +  guide_area() + 
-  plot_layout(nrow = 2, ncol = 2, guides = "collect") +
+combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 +  
+  plot_layout(nrow = 1, ncol = 2, guides = "collect") +
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size=20),
         plot.tag.position  = c(0.1, 1.01),
@@ -294,7 +302,7 @@ combined_plot_v1 <- plot_2023_v1 + plot_2024_v1 + plot_2025_v1 +  guide_area() +
 print(combined_plot_v1)
 
 
-ggsave("figures/RDA_plot_v1.png", combined_plot_v1, width = 13, height = 12, dpi = 150)
+ggsave("figures/RDA_plot_v1.png", combined_plot_v1, width = 13, height = 7, dpi = 150)
 
 
 
