@@ -243,7 +243,7 @@ Plot_RD_1 <- ggplot(RDran2_pred, aes(x = x, y = predicted, color = month, fill =
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = RD_mm, color = month), size = 2) +
-  facet_wrap(~year) +
+  facet_wrap(~year, labeller = as_labeller(new_labels)) +
   labs(x = "Groundwater Level [cm]", y = "Average Root Diameter [mm]", color = "Month", fill = "Month") +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
   scale_fill_manual(values = c("#3CB22D", "#FF8000")) +
@@ -327,7 +327,7 @@ Plot_Hyph_1 <- ggplot(Hyphran3_pred, aes(x = x, y = predicted, color = month, fi
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data, aes(x = GW_level_cm, y = hyphae, color = month), size = 2) +
-  facet_wrap(~year) +
+  facet_wrap(~year, labeller = as_labeller(new_labels)) +
   labs(x = "Groundwater Level [cm]", y = "Percentage of Roots colonized with AMF [%]", 
        color = "Month", fill = "Month") +
   scale_color_manual(values = c("#3CB22D", "#FF8000")) +
@@ -474,10 +474,15 @@ Plot_BM_2 <- ggplot(BMran2_pred2, aes(x = x, y = predicted, color = year, fill =
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, color = NA) +
   geom_line(size = 0.8) +
   geom_point(data = Lys_data_mass, aes(x = GW_level_cm, y = bmy_g, color = year, pch = year), size = 2) +
-  labs(x = "Groundwater Level [cm]", y = "Annual aboveground productivity [g]") +
-  scale_color_manual(values = c("#D8152F", "#2857FF")) +
-  scale_fill_manual(values = c("#D8152F", "#2857FF")) +
+  labs(x = "Groundwater Level [cm]", y = "Annual Aboveground Productivity [g]") +
+  scale_color_manual(values = c("#D8152F", "#2857FF"),
+                     labels=new_labels) +
+  scale_fill_manual(values = c("#D8152F", "#2857FF"),
+                    labels=new_labels) +
+  scale_shape_manual(values=c(19, 17),
+                     labels=new_labels) +
   theme_bw()
+
 Plot_BM_2
 
 ggsave("figures/annualproductivity_year.png", Plot_BM_2, width = 10, height = 7.5, dpi = 150)
