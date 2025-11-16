@@ -476,14 +476,14 @@ make_corr_plot <- function(df, title = NULL) {
   ggcorrplot(
     corr_mat,
     hc.order = FALSE, type = "lower",
-    lab = TRUE, lab_size = 2,
-    colors = c("red", "white", "blue"),
-    legend.title = "Pearson r"
-  ) +
+    lab = TRUE, lab_size = 4,
+   # colors = c("red", "white", "blue"),
+    colors = c("#6D9EC1", "white", "#E46726"),
+        legend.title = "Pearson r") +
     ggtitle(title)
 }
 
-
+?ggcorrplot
 # ---- Create correlation plots ----
 
 p_2023 <- make_corr_plot(traits_2023, title = "First Sampling Year")
@@ -496,23 +496,46 @@ p_all <- make_corr_plot(Lys_data %>%
 
 # Combine plots 
 
+library(patchwork)
+
+A <- plot_all_PCA +
+  theme(plot.tag.position = c(0.1, 1.05))
+
+B <- p_all +
+  theme(plot.tag.position = c(0.4, 0.91))   
+
+C <- p_2023 +
+  theme(axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.tag.position = c(0.03, 0.91))
+
+D <- p_2024 +
+  theme(axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.tag.position = c(0.03, 0.91))
 
 
+top <- (plot_spacer() + A + plot_spacer()) +
+  plot_layout(ncol = 3, widths = c(1, 6, 1), guides = "collect")&
+  theme(plot.margin = margin(t = 20, r = 0, b = 0, l = 0))
 
-top <- (plot_spacer() + plot_all_PCA + plot_spacer()) +
-  plot_layout(ncol = 3, widths = c(1, 6, 1), guides = "collect")
 
-bottom <- (p_all + p_2023 + p_2024) +
-  plot_layout(ncol = 3, widths = c(1, 1, 1), guides = "collect")&
-  theme(plot.margin = margin(t = 50, r = 5, b = 50, l = 20))
+bottom <- (B + C + D) +
+  plot_layout(ncol = 3, widths = c(1, 1, 1), 
+              guides = "collect") &
+  theme(plot.margin = margin(t = 10, r = 5, b = 5, l = 20))
 
-combined_plot <- top / bottom +
-  plot_layout(heights = c(1, 1), guides = "collect") +
+combined <- top / bottom +
+  plot_layout(heights = c(1, 1)) +
   plot_annotation(tag_levels = "a") &
   theme(plot.tag = element_text(face = 'bold', size = 15),
-        plot.tag.position  = c(0.3, 1.07),
-        plot.title = element_text(hjust = 0.5, face = 'bold', size = 11))
+        # plot.tag.position  = c(0.18, 1.05),
+        plot.title = element_text(hjust = 0.6, vjust=-18, #face = 'bold',
+                                  size = 11))
 
-print(combined_plot)
+print(combined)
 
-ggsave("figures/correlation_plot.png", combined_plot, width = 12, height = 12, dpi = 150)
+ggsave("figures/correlation_plot.png", combined, width = 12, height = 12, dpi = 150)
+
