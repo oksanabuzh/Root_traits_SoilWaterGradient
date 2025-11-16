@@ -7,7 +7,8 @@ library(ggsignif)     # Significance annotations on ggplots
 library(sjPlot)       # Model visualization
 library(ggeffects)    # For ggpredict() predictions
 library(car)          # For model fit results
-
+library(emmeans)      # for marginal means
+library(multcomp)
 # ----------------- Data Preparation -----------------
 # Read in the root traits data and convert year to factor
 Lys_data <- read_csv("data/RGG_Lys_Gradient.csv") %>%
@@ -64,6 +65,7 @@ anova(SRLran1, SRLran2)
 
 # final model
 SRLran2
+
 
 ## Plots----
 
@@ -154,6 +156,44 @@ anova(RTDran1b, RTDran2)
 
 # final model
 RTDran2
+
+summary(RTDran2)
+
+## Slope significance within interaction  -------------
+
+library(dplyr)
+library(broom)
+
+Lys_data %>%
+  group_by(year) %>%
+  do(model = lm(log(RTD_g_cm3) ~ GW_level_cm + month, data = .)) %>%
+  mutate(tidy_model = list(tidy(car::Anova(model))))  %>%
+  unnest(tidy_model) %>% 
+  tibble() %>% 
+  write_csv("RTD_slopes_by_year.csv")
+
+# Test if each slope is significantly different from zero
+emtrends(RTDran2, ~ year, var = "GW_level_cm") %>%  # Simple slopes of GW_level_cm within each year
+  test() # a t-test for each slope against the null hypothesis H₀: slope = 0.
+
+## Compare marginal means -------
+# Compare years at the mean of GW_level_cm
+emmeans(RTDran2, 
+        list(pairwise ~ year)) # Pairwise comparison with confidence interval
+emmeans(RTDran2, 
+        list(pairwise ~ month)) 
+
+# Compare years at each level of GW_level_cm
+Lys_data_mass %>% 
+  pull(GW_level_cm) %>% 
+  unique()
+
+gw_values <- c(-10.0,   0, -12.5, -20.0,  -7.5, -15.0,  -2.5, -17.5, -5.0)  # adjust to your actual range
+
+emm_gw <- emmeans(RTDran2, ~ year | GW_level_cm, 
+                  at = list(GW_level_cm = gw_values))
+
+pairs(emm_gw, infer = TRUE)
 
 ## Plots----
 
@@ -466,6 +506,46 @@ anova(BMran3, BMran4)
 
 # final model
 car::Anova(BMran4)
+summary(BMran4)
+
+
+## Slope significance within interaction  -------------
+
+# Linear for first year
+model_first <- lm(bmy_g ~ GW_level_cm, 
+                  data = filter(Lys_data_mass, year == "2023"))
+
+# Polynomial for second year
+model_second <- lm(bmy_g ~ poly(GW_level_cm, 2), 
+                   data = filter(Lys_data_mass, year == "2024"))
+
+# Tidy results
+results <- bind_rows(
+  tidy(car::Anova(model_first)) %>% mutate(year = "first year"),
+  tidy(car::Anova(model_second)) %>% mutate(year = "second year")
+)
+
+print(results)
+write_csv(results, "slopes_by_year.csv")
+
+## Compare marginal means -------
+# Compare years at the mean of GW_level_cm
+emmeans(BMran4, 
+        list(pairwise ~ year)) # Pairwise comparison with confidence interval
+
+# Compare years at each level of GW_level_cm
+
+Lys_data_mass %>% 
+  pull(GW_level_cm) %>% 
+  unique()
+
+gw_values <- c(-10.0,   0, -12.5, -20.0,  -7.5, -15.0,  -2.5, -17.5, -5.0)  # adjust to your actual range
+
+emm_gw <- emmeans(BMran4, ~ year | GW_level_cm, 
+                  at = list(GW_level_cm = gw_values))
+
+pairs(emm_gw, infer = TRUE)
+
 
 ## Plots----
 

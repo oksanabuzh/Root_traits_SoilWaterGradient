@@ -1,0 +1,5 @@
+term,sumsq,df,statistic,p.value,year
+GW_level_cm,361926.66666666657,1,12.157678749050572,0.010172661505192394,first year
+Residuals,208385.7222222222,7,NA,NA,first year
+"poly(GW_level_cm, 2)",581041.12005772,2,9.54713561199326,0.013668787387165156,second year
+Residuals,182580.7688311687,6,NA,NA,second year
